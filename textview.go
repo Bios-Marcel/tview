@@ -321,6 +321,17 @@ func (t *TextView) ScrollToEnd() *TextView {
 	return t
 }
 
+//IsScrolledToEnd checks wether the TextView is scrolled as far down as
+//possible. If so, it returns true, otherwise false.
+func (t *TextView) IsScrolledToEnd() bool {
+	heightMinusBorders := t.height
+	if t.border {
+		heightMinusBorders = heightMinusBorders - 2
+	}
+
+	return t.lineOffset >= len(t.index)-heightMinusBorders
+}
+
 // GetScrollOffset returns the number of rows and columns that are skipped at
 // the top left corner when the text view has been scrolled.
 func (t *TextView) GetScrollOffset() (row, column int) {
