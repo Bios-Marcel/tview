@@ -456,34 +456,45 @@ func (t *TreeView) process() {
 	MovementSwitch:
 		switch t.movement {
 		case treeUp:
-			if t.cycleSelection {
-				//Cycle to the bottom if we are at the top.
-				if newSelectedIndex == 0 {
-					newSelectedIndex = len(t.nodes)
-				}
-			}
-			
 			for newSelectedIndex > 0 {
 				newSelectedIndex--
 				if t.nodes[newSelectedIndex].selectable {
 					break MovementSwitch
 				}
 			}
-			newSelectedIndex = selectedIndex
-		case treeDown:
+
+			//Cycle to the bottom if we are at the top.
 			if t.cycleSelection {
-			//Cycle to the top if we are at the bottom.
-				if newSelectedIndex == len(t.nodes)-1 {
-					newSelectedIndex = -1
+				newSelectedIndex = len(t.nodes)
+				for newSelectedIndex > selectedIndex {
+					newSelectedIndex--
+					if t.nodes[newSelectedIndex].selectable {
+						break MovementSwitch
+					}
 				}
 			}
-		
+
+			newSelectedIndex = selectedIndex
+
+		case treeDown:
 			for newSelectedIndex < len(t.nodes)-1 {
 				newSelectedIndex++
 				if t.nodes[newSelectedIndex].selectable {
 					break MovementSwitch
 				}
 			}
+
+			//Cycle to the top if we are at the bottom.
+			if t.cycleSelection {
+				newSelectedIndex = -1
+				for newSelectedIndex < selectedIndex {
+					newSelectedIndex++
+					if t.nodes[newSelectedIndex].selectable {
+						break MovementSwitch
+					}
+				}
+			}
+
 			newSelectedIndex = selectedIndex
 		case treeHome:
 			for newSelectedIndex = 0; newSelectedIndex < len(t.nodes); newSelectedIndex++ {
