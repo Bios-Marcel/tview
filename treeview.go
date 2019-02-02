@@ -134,6 +134,11 @@ func (n *TreeNode) SetSelectable(selectable bool) *TreeNode {
 	return n
 }
 
+// IsSelectable returns wether the node is selectable or not.
+func (n *TreeNode) IsSelectable() bool {
+	return n.selectable
+}
+
 // SetSelectedFunc sets a function which is called when the user selects this
 // node by hitting Enter when it is selected.
 func (n *TreeNode) SetSelectedFunc(handler func()) *TreeNode {
