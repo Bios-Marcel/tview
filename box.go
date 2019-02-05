@@ -97,7 +97,7 @@ func (b *Box) SetVisible(visible bool) {
 	b.visible = visible
 }
 
-// GetVisible gets whether the Box should be drawn onto the screen.
+// IsVisible gets whether the Box should be drawn onto the screen.
 func (b *Box) IsVisible() bool {
 	return b.visible
 }
@@ -232,6 +232,8 @@ func (b *Box) SetBorderColor(color tcell.Color) *Box {
 	return b
 }
 
+// SetBorderSides decides which sides of the border should be shown in case the
+// border has been activated.
 func (b *Box) SetBorderSides(top, left, bottom, right bool) *Box {
 	b.borderTop = top
 	b.borderLeft = left
