@@ -54,6 +54,8 @@ type Box struct {
 	// Whether or not this box has focus.
 	hasFocus bool
 
+	visible bool
+
 	// An optional capture function which receives a key event and returns the
 	// event to be forwarded to the primitive's default input handler (nil if
 	// nothing should be forwarded).
@@ -77,6 +79,7 @@ func NewBox() *Box {
 		borderBottom:    true,
 		borderLeft:      true,
 		borderRight:     true,
+		visible:         true,
 	}
 
 	b.focus = b
@@ -87,6 +90,16 @@ func NewBox() *Box {
 func (b *Box) SetBorderPadding(top, bottom, left, right int) *Box {
 	b.paddingTop, b.paddingBottom, b.paddingLeft, b.paddingRight = top, bottom, left, right
 	return b
+}
+
+// SetVisible sets whether the Box should be drawn onto the screen.
+func (b *Box) SetVisible(visible bool) {
+	b.visible = visible
+}
+
+// GetVisible gets whether the Box should be drawn onto the screen.
+func (b *Box) GetVisible() bool {
+	return b.visible
 }
 
 // GetRect returns the current position of the rectangle, x, y, width, and
@@ -265,10 +278,10 @@ func (b *Box) SetTitleAlign(align int) *Box {
 }
 
 // Draw draws this primitive onto the screen.
-func (b *Box) Draw(screen tcell.Screen) {
+func (b *Box) Draw(screen tcell.Screen) bool {
 	// Don't draw anything if there is no space.
-	if b.width <= 0 || b.height <= 0 {
-		return
+	if b.width <= 0 || b.height <= 0 || !b.visible {
+		return false
 	}
 
 	def := tcell.StyleDefault
@@ -407,6 +420,8 @@ func (b *Box) Draw(screen tcell.Screen) {
 		b.innerHeight += b.innerY
 		b.innerY = 0
 	}
+
+	return true
 }
 
 // Focus is called when this primitive receives focus.
