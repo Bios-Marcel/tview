@@ -141,6 +141,9 @@ type TextView struct {
 	// after punctuation characters.
 	wordWrap bool
 
+	// Decides wether it allows usage of vim bindings for navigation.
+	vimBindings bool
+
 	// The (starting) color of the text.
 	textColor tcell.Color
 
@@ -210,6 +213,14 @@ func (t *TextView) SetWordWrap(wrapOnWords bool) *TextView {
 		t.index = nil
 	}
 	t.wordWrap = wrapOnWords
+	return t
+}
+
+// SetVimBindingsEnabled decides wether the usage of vim bindings for
+// navigation is possible or not.
+func (t *TextView) SetVimBindingsEnabled(enabled bool) *TextView {
+	t.vimBindings = enabled
+
 	return t
 }
 
@@ -990,23 +1001,25 @@ func (t *TextView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 
 		switch key {
 		case tcell.KeyRune:
-			switch event.Rune() {
-			case 'g': // Home.
-				t.trackEnd = false
-				t.lineOffset = 0
-				t.columnOffset = 0
-			case 'G': // End.
-				t.trackEnd = true
-				t.columnOffset = 0
-			case 'j': // Down.
-				t.lineOffset++
-			case 'k': // Up.
-				t.trackEnd = false
-				t.lineOffset--
-			case 'h': // Left.
-				t.columnOffset--
-			case 'l': // Right.
-				t.columnOffset++
+			if t.vimBindings {
+				switch event.Rune() {
+				case 'g': // Home.
+					t.trackEnd = false
+					t.lineOffset = 0
+					t.columnOffset = 0
+				case 'G': // End.
+					t.trackEnd = true
+					t.columnOffset = 0
+				case 'j': // Down.
+					t.lineOffset++
+				case 'k': // Up.
+					t.trackEnd = false
+					t.lineOffset--
+				case 'h': // Left.
+					t.columnOffset--
+				case 'l': // Right.
+					t.columnOffset++
+				}
 			}
 		case tcell.KeyHome:
 			t.trackEnd = false

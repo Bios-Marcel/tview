@@ -283,6 +283,9 @@ type TreeView struct {
 
 	// The visible nodes, top-down, as set by process().
 	nodes []*TreeNode
+
+	// Decides wether it allows usage of vim bindings for navigation.
+	vimBindings bool
 }
 
 // NewTreeView returns a new tree view.
@@ -377,6 +380,14 @@ func (t *TreeView) SetGraphicsColor(color tcell.Color) *TreeView {
 // a new tree node.
 func (t *TreeView) SetChangedFunc(handler func(node *TreeNode)) *TreeView {
 	t.changed = handler
+	return t
+}
+
+// SetVimBindingsEnabled decides wether the usage of vim bindings for
+// navigation is possible or not.
+func (t *TreeView) SetVimBindingsEnabled(enabled bool) *TreeView {
+	t.vimBindings = enabled
+
 	return t
 }
 
@@ -711,15 +722,17 @@ func (t *TreeView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 		case tcell.KeyPgUp, tcell.KeyCtrlB:
 			t.movement = treePageUp
 		case tcell.KeyRune:
-			switch event.Rune() {
-			case 'g':
-				t.movement = treeHome
-			case 'G':
-				t.movement = treeEnd
-			case 'j':
-				t.movement = treeDown
-			case 'k':
-				t.movement = treeUp
+			if t.vimBindings {
+				switch event.Rune() {
+				case 'g':
+					t.movement = treeHome
+				case 'G':
+					t.movement = treeEnd
+				case 'j':
+					t.movement = treeDown
+				case 'k':
+					t.movement = treeUp
+				}
 			}
 		case tcell.KeyEnter:
 			if t.currentNode != nil {
