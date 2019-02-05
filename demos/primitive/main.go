@@ -4,8 +4,8 @@ package main
 import (
 	"fmt"
 
-	"github.com/gdamore/tcell"
 	"github.com/Bios-Marcel/tview"
+	"github.com/gdamore/tcell"
 )
 
 // RadioButtons implements a simple primitive for radio button selections.
@@ -24,8 +24,12 @@ func NewRadioButtons(options []string) *RadioButtons {
 }
 
 // Draw draws this primitive onto the screen.
-func (r *RadioButtons) Draw(screen tcell.Screen) {
-	r.Box.Draw(screen)
+func (r *RadioButtons) Draw(screen tcell.Screen) bool {
+	res := r.Box.Draw(screen)
+	if !res {
+		return false
+	}
+
 	x, y, width, height := r.GetInnerRect()
 
 	for index, option := range r.options {
@@ -39,6 +43,8 @@ func (r *RadioButtons) Draw(screen tcell.Screen) {
 		line := fmt.Sprintf(`%s[white]  %s`, radioButton, option)
 		tview.Print(screen, line, x, y+index, width, tview.AlignLeft, tcell.ColorYellow)
 	}
+
+	return true
 }
 
 // InputHandler returns the handler for this primitive.
