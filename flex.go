@@ -155,6 +155,10 @@ func (f *Flex) Draw(screen tcell.Screen) bool {
 	}
 	for _, item := range f.items {
 		if !item.Item.IsVisible() {
+			if item.Item.GetFocusable().HasFocus() {
+				item.Item.Blur()
+				screen.HideCursor()
+			}
 			continue
 		}
 
