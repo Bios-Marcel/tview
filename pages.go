@@ -163,6 +163,17 @@ func (p *Pages) SwitchToPage(name string) *Pages {
 	return p
 }
 
+// GetCurrentPage returns the name of the current page or an empty string.
+func (p *Pages) GetCurrentPage() string {
+	for _, page := range p.pages {
+		if page.Visible {
+			return page.Name
+		}
+	}
+
+	return ""
+}
+
 // SendToFront changes the order of the pages such that the page with the given
 // name comes last, causing it to be drawn last with the next update (if
 // visible).
