@@ -480,7 +480,7 @@ func (t *TextView) Focus(delegate func(p Primitive)) {
 	// Implemented here with locking because this is used by layout primitives.
 	t.Lock()
 	defer t.Unlock()
-	t.hasFocus = true
+	t.Box.Focus(delegate)
 }
 
 // HasFocus returns whether or not this primitive has focus.
@@ -1029,8 +1029,8 @@ func (t *TextView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 			t.trackEnd = true
 			t.columnOffset = 0
 		case tcell.KeyUp:
-			t.trackEnd = false
 			t.lineOffset--
+			t.trackEnd = false
 		case tcell.KeyDown:
 			t.lineOffset++
 		case tcell.KeyLeft:
