@@ -110,6 +110,12 @@ func (n *TreeNode) GetText() string {
 	return n.text
 }
 
+// GetParent returns a refrence to this nodes parent node or nil if this is a
+// root node.
+func (n *TreeNode) GetParent() *TreeNode {
+	return n.parent
+}
+
 // GetChildren returns this node's children.
 func (n *TreeNode) GetChildren() []*TreeNode {
 	return n.children
