@@ -772,7 +772,7 @@ func (t *TreeView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 					t.jumpBuffer = ""
 				}
 
-				if event.Rune() != 0 {
+				if event.Key() == tcell.KeyRune {
 					t.jumpTime = time.Now()
 					t.jumpBuffer += strings.ToLower(string(event.Rune()))
 
@@ -800,14 +800,14 @@ func (t *TreeView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 // FindFirstSelectableNode iterates through the tree from top to bottom, trying
 // to find a node that is selectable and has the given text as its prefix. The
 // search is case-insensitive.
-func (treeView *TreeView) FindFirstSelectableNode(node *TreeNode, text string) *TreeNode {
+func (t *TreeView) FindFirstSelectableNode(node *TreeNode, text string) *TreeNode {
 	for _, child := range node.GetChildren() {
 		if len(child.GetChildren()) == 0 {
 			if child.IsSelectable() && strings.HasPrefix(strings.ToLower(child.GetText()), text) {
 				return child
 			}
 		} else {
-			subResult := treeView.FindFirstSelectableNode(child, text)
+			subResult := t.FindFirstSelectableNode(child, text)
 			if subResult != nil {
 				return subResult
 			}

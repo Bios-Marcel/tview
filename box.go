@@ -61,6 +61,8 @@ type Box struct {
 	// nothing should be forwarded).
 	inputCapture func(event *tcell.EventKey) *tcell.EventKey
 
+	mouseHandler func(event *tcell.EventMouse) bool
+
 	// An optional function which is called before the box is drawn.
 	draw func(screen tcell.Screen, x, y, width, height int) (int, int, int, int)
 
@@ -227,6 +229,16 @@ func (b *Box) SetInputCapture(capture func(event *tcell.EventKey) *tcell.EventKe
 // if no such function has been installed.
 func (b *Box) GetInputCapture() func(event *tcell.EventKey) *tcell.EventKey {
 	return b.inputCapture
+}
+
+// SetMouseHandler sets the mouse event handler.
+func (b *Box) SetMouseHandler(handler func(event *tcell.EventMouse) bool) {
+	b.mouseHandler = handler
+}
+
+// MouseHandler returns the mouse event handler or nil if none is present.
+func (b *Box) MouseHandler() func(event *tcell.EventMouse) bool {
+	return b.mouseHandler
 }
 
 // SetBackgroundColor sets the box's background color.
