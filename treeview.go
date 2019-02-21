@@ -1,6 +1,9 @@
 package tview
 
 import (
+	"strings"
+	"time"
+
 	"github.com/gdamore/tcell"
 )
 
@@ -292,6 +295,12 @@ type TreeView struct {
 
 	// Decides wether it allows usage of vim bindings for navigation.
 	vimBindings bool
+
+	// Decides wether a search and selection will be triggered on rune input.
+	searchOnType bool
+
+	jumpTime   time.Time
+	jumpBuffer string
 }
 
 // NewTreeView returns a new tree view.
@@ -300,6 +309,8 @@ func NewTreeView() *TreeView {
 		Box:           NewBox(),
 		graphics:      true,
 		graphicsColor: Styles.GraphicsColor,
+		searchOnType:  true,
+		vimBindings:   false,
 	}
 }
 
@@ -390,9 +401,26 @@ func (t *TreeView) SetChangedFunc(handler func(node *TreeNode)) *TreeView {
 }
 
 // SetVimBindingsEnabled decides wether the usage of vim bindings for
-// navigation is possible or not.
+// navigation is possible or not. This setting disables the search on
+// rune input.
 func (t *TreeView) SetVimBindingsEnabled(enabled bool) *TreeView {
 	t.vimBindings = enabled
+
+	if enabled {
+		t.searchOnType = false
+	}
+
+	return t
+}
+
+// SetSearchOnTypeEnabled enables / disables search through the tree on rune
+// input.
+func (t *TreeView) SetSearchOnTypeEnabled(enabled bool) *TreeView {
+	t.searchOnType = enabled
+
+	if enabled {
+		t.vimBindings = false
+	}
 
 	return t
 }
@@ -739,6 +767,20 @@ func (t *TreeView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 				case 'k':
 					t.movement = treeUp
 				}
+			} else if t.searchOnType {
+				if time.Since(t.jumpTime) > (500 * time.Millisecond) {
+					t.jumpBuffer = ""
+				}
+
+				if event.Rune() != 0 {
+					t.jumpTime = time.Now()
+					t.jumpBuffer += strings.ToLower(string(event.Rune()))
+
+					node := t.FindFirstSelectableNode(t.GetRoot(), t.jumpBuffer)
+					if node != nil {
+						t.SetCurrentNode(node)
+					}
+				}
 			}
 		case tcell.KeyEnter:
 			if t.currentNode != nil {
@@ -753,4 +795,24 @@ func (t *TreeView) InputHandler() func(event *tcell.EventKey, setFocus func(p Pr
 
 		t.process()
 	})
+}
+
+// FindFirstSelectableNode iterates through the tree from top to bottom, trying
+// to find a node that is selectable and has the given text as its prefix. The
+// search is case-insensitive.
+func (treeView *TreeView) FindFirstSelectableNode(node *TreeNode, text string) *TreeNode {
+	for _, child := range node.GetChildren() {
+		if len(child.GetChildren()) == 0 {
+			if child.IsSelectable() && strings.HasPrefix(strings.ToLower(child.GetText()), text) {
+				return child
+			}
+		} else {
+			subResult := treeView.FindFirstSelectableNode(child, text)
+			if subResult != nil {
+				return subResult
+			}
+		}
+	}
+
+	return nil
 }
