@@ -314,6 +314,15 @@ func (t *TextView) ScrollTo(row, column int) *TextView {
 	return t
 }
 
+func (t *TextView) ScrollDown() {
+	t.lineOffset++
+}
+
+func (t *TextView) ScrollUp() {
+	t.lineOffset--
+	t.trackEnd = false
+}
+
 // ScrollToBeginning scrolls to the top left corner of the text if the text view
 // is scrollable.
 func (t *TextView) ScrollToBeginning() *TextView {
