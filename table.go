@@ -328,6 +328,11 @@ func (t *Table) SetFixed(rows, columns int) *Table {
 	return t
 }
 
+// GetFixed returns the amount of fixed rows and columns
+func (t *Table) GetFixed() (int, int) {
+	return t.fixedRows, t.fixedColumns
+}
+
 // SetSelectable sets the flags which determine what can be selected in a table.
 // There are three selection modi:
 //
