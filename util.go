@@ -372,7 +372,7 @@ func printWithStyle(screen tcell.Screen, text string, x, y, maxWidth, align int,
 			colorPos++
 		}
 
-		// Handle scape tags.
+		// Handle escape tags.
 		if escapePos < len(escapeIndices) && textPos+tagOffset >= escapeIndices[escapePos][0] && textPos+tagOffset < escapeIndices[escapePos][1] {
 			if textPos+tagOffset == escapeIndices[escapePos][1]-2 {
 				tagOffset++
