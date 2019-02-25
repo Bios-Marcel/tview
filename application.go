@@ -312,8 +312,9 @@ func getComponentAtRecursively(primitive Primitive, x, y int) *Primitive {
 		}
 	}
 
-	curX, curY, width, height := primitive.GetRect()
-	if x >= curX && y >= curY && x <= (curX+width) && y <= (curY+height) {
+	componentX, componentY, width, height := primitive.GetRect()
+	// Subtracting -1 from height and width, since we got a pixel with coordinate already.
+	if componentX <= x && componentY <= y && (componentX+width-1) >= x && (componentY+height-1) >= y {
 		return &primitive
 	}
 
