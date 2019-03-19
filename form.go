@@ -338,7 +338,7 @@ func (f *Form) Draw(screen tcell.Screen) bool {
 	// Find the longest label.
 	var maxLabelWidth int
 	for _, item := range f.items {
-		labelWidth := StringWidth(item.GetLabel())
+		labelWidth := TaggedStringWidth(item.GetLabel())
 		if labelWidth > maxLabelWidth {
 			maxLabelWidth = labelWidth
 		}
@@ -350,7 +350,7 @@ func (f *Form) Draw(screen tcell.Screen) bool {
 	var focusedPosition struct{ x, y, width, height int }
 	for index, item := range f.items {
 		// Calculate the space needed.
-		labelWidth := StringWidth(item.GetLabel())
+		labelWidth := TaggedStringWidth(item.GetLabel())
 		var itemWidth int
 		if f.horizontal {
 			fieldWidth := item.GetFieldWidth()
@@ -404,7 +404,7 @@ func (f *Form) Draw(screen tcell.Screen) bool {
 	buttonWidths := make([]int, len(f.buttons))
 	buttonsWidth := 0
 	for index, button := range f.buttons {
-		w := StringWidth(button.GetLabel()) + 4
+		w := TaggedStringWidth(button.GetLabel()) + 4
 		buttonWidths[index] = w
 		buttonsWidth += w + 1
 	}
