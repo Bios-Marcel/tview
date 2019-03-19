@@ -8,6 +8,7 @@ type Theme struct {
 	ContrastBackgroundColor     tcell.Color // Background color for contrasting elements.
 	MoreContrastBackgroundColor tcell.Color // Background color for even more contrasting elements.
 	BorderColor                 tcell.Color // Box borders.
+	BorderFocusColor            tcell.Color // Box borders when focused.
 	TitleColor                  tcell.Color // Box titles.
 	GraphicsColor               tcell.Color // Graphics.
 	PrimaryTextColor            tcell.Color // Primary text.
@@ -25,6 +26,7 @@ var Styles = Theme{
 	ContrastBackgroundColor:     tcell.ColorBlue,
 	MoreContrastBackgroundColor: tcell.ColorGreen,
 	BorderColor:                 tcell.ColorWhite,
+	BorderFocusColor:            tcell.ColorBlue,
 	TitleColor:                  tcell.ColorWhite,
 	GraphicsColor:               tcell.ColorWhite,
 	PrimaryTextColor:            tcell.ColorWhite,

@@ -330,7 +330,7 @@ func (b *Box) Draw(screen tcell.Screen) bool {
 	if b.border && b.width >= 2 && b.height >= 2 {
 		var border tcell.Style
 		if b.hasFocus {
-			border = background.Foreground(tcell.ColorBlue) | tcell.Style(b.borderAttributes)
+			border = background.Foreground(Styles.BorderFocusColor) | tcell.Style(b.borderAttributes)
 		} else {
 			border = background.Foreground(b.borderColor) | tcell.Style(b.borderAttributes)
 		}
