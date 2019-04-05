@@ -34,13 +34,22 @@ type Button struct {
 func NewButton(label string) *Button {
 	box := NewBox().SetBackgroundColor(Styles.ContrastBackgroundColor)
 	box.SetRect(0, 0, TaggedStringWidth(label)+4, 1)
-	return &Button{
+	button := &Button{
 		Box:                      box,
 		label:                    label,
 		labelColor:               Styles.PrimaryTextColor,
 		labelColorActivated:      Styles.InverseTextColor,
 		backgroundColorActivated: Styles.PrimaryTextColor,
 	}
+	button.SetMouseHandler(func(event *tcell.EventMouse) bool {
+		if event.Buttons() == tcell.Button1 {
+			button.selected()
+			return true
+		}
+
+		return false
+	})
+	return button
 }
 
 // SetLabel sets the button text.
