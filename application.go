@@ -299,6 +299,16 @@ func getComponentAtRecursively(primitive Primitive, x, y int) *Primitive {
 		}
 	}
 
+	grid, isGrid := primitive.(*Grid)
+	if isGrid {
+		for _, child := range grid.items {
+			found := getComponentAtRecursively(child.Item, x, y)
+			if found != nil {
+				return found
+			}
+		}
+	}
+
 	pages, isPages := primitive.(*Pages)
 	if isPages {
 		for _, page := range pages.pages {
