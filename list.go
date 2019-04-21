@@ -68,7 +68,7 @@ type List struct {
 
 // NewList returns a new form.
 func NewList() *List {
-	return &List{
+	list := &List{
 		Box:                     NewBox(),
 		showSecondaryText:       true,
 		mainTextColor:           Styles.PrimaryTextColor,
@@ -77,6 +77,77 @@ func NewList() *List {
 		selectedTextColor:       Styles.PrimitiveBackgroundColor,
 		selectedBackgroundColor: Styles.PrimaryTextColor,
 	}
+
+	list.SetMouseHandler(func(event *tcell.EventMouse) bool {
+		//TODO Implement scrolling here
+
+		if list.hasFocus && event.Buttons() == tcell.Button1 {
+			xEvent, yEvent := event.Position()
+			x, y, width, _ := list.GetRect()
+
+			//If a border on the left or right is being clicked, we won't do
+			//anything.
+			if list.border {
+				//We got a left border that was clicked.
+				if list.borderLeft && (x == xEvent) {
+					return false
+				}
+
+				//We got a right border and the total last coordinate was the
+				//position of the right border.
+				//
+				//Below is a little example. The component has a width of 4.
+				//
+				//0123456789
+				//   B  B
+				//   ----
+				//
+				//The component spans from 3 to 6, which is 4 characters.
+				//so X is 3 and incase 3(X) + 4(width) - 1 would equal the
+				//position of the right border.
+				if list.borderRight && (x+width-1) == xEvent {
+					return false
+				}
+			}
+
+			//The general startindex is the position of the click minus the
+			//beginning of the component, since usually every item takes up
+			//one line. On top of that, we need to skip the invisible(offset)
+			//items.
+			index := list.offset + yEvent - y
+			if list.border && list.borderTop {
+				index--
+			}
+
+			//Despite what was mentioned in the last statement, not every item
+			//always takes up one line. If an the list has secondary text
+			//enabled then every item takes up two lines and we therefore need
+			//to half our access index.
+			if list.showSecondaryText {
+				index = index / 2
+			}
+
+			//The click was outside of the items, meaning that "nothing" was
+			//clicked.
+			if index >= len(list.items) {
+				return false
+			}
+
+			item := list.items[index]
+			if item.Selected != nil {
+				item.Selected()
+			}
+			if list.selected != nil {
+				list.selected(index, item.MainText, item.SecondaryText, item.Shortcut)
+			}
+
+			return true
+		}
+
+		return false
+	})
+
+	return list
 }
 
 // SetCurrentItem sets the currently selected item by its index, starting at 0
