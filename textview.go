@@ -340,6 +340,7 @@ func (t *TextView) ScrollTo(row, column int) *TextView {
 	}
 	t.lineOffset = row
 	t.columnOffset = column
+	t.trackEnd = false
 	return t
 }
 
