@@ -35,6 +35,9 @@ type Box struct {
 	// The color of the border.
 	borderColor tcell.Color
 
+	// The color of the border when the box has focus.
+	borderFocusColor tcell.Color
+
 	// The style attributes of the border.
 	borderAttributes tcell.AttrMask
 
@@ -76,18 +79,19 @@ type Box struct {
 // NewBox returns a Box without a border.
 func NewBox() *Box {
 	b := &Box{
-		width:           15,
-		height:          10,
-		innerX:          -1, // Mark as uninitialized.
-		backgroundColor: Styles.PrimitiveBackgroundColor,
-		borderColor:     Styles.BorderColor,
-		titleColor:      Styles.TitleColor,
-		titleAlign:      AlignCenter,
-		borderTop:       true,
-		borderBottom:    true,
-		borderLeft:      true,
-		borderRight:     true,
-		visible:         true,
+		width:            15,
+		height:           10,
+		innerX:           -1, // Mark as uninitialized.
+		backgroundColor:  Styles.PrimitiveBackgroundColor,
+		borderColor:      Styles.BorderColor,
+		borderFocusColor: Styles.BorderFocusColor,
+		titleColor:       Styles.TitleColor,
+		titleAlign:       AlignCenter,
+		borderTop:        true,
+		borderBottom:     true,
+		borderLeft:       true,
+		borderRight:      true,
+		visible:          true,
 	}
 
 	b.focus = b
@@ -260,6 +264,12 @@ func (b *Box) SetBorderColor(color tcell.Color) *Box {
 	return b
 }
 
+// SetBorderFocusColor sets the box's border color.
+func (b *Box) SetBorderFocusColor(color tcell.Color) *Box {
+	b.borderFocusColor = color
+	return b
+}
+
 // SetBorderSides decides which sides of the border should be shown in case the
 // border has been activated.
 func (b *Box) SetBorderSides(top, left, bottom, right bool) *Box {
@@ -330,7 +340,7 @@ func (b *Box) Draw(screen tcell.Screen) bool {
 	if b.border && b.width >= 2 && b.height >= 2 {
 		var border tcell.Style
 		if b.hasFocus {
-			border = background.Foreground(Styles.BorderFocusColor) | tcell.Style(b.borderAttributes)
+			border = background.Foreground(b.borderFocusColor) | tcell.Style(b.borderAttributes)
 		} else {
 			border = background.Foreground(b.borderColor) | tcell.Style(b.borderAttributes)
 		}
