@@ -133,6 +133,8 @@ func NewList() *List {
 				return false
 			}
 
+			list.SetCurrentItem(index)
+
 			item := list.items[index]
 			if item.Selected != nil {
 				item.Selected()
