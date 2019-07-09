@@ -131,7 +131,8 @@ func (b *Box) SetOnBlur(handler func()) {
 }
 
 // GetInnerRect returns the position of the inner rectangle (x, y, width,
-// height), without the border and without any padding.
+// height), without the border and without any padding. Width and height values
+// will clamp to 0 and thus never be negative.
 func (b *Box) GetInnerRect() (int, int, int, int) {
 	if b.innerX >= 0 {
 		return b.innerX, b.innerY, b.innerWidth, b.innerHeight
@@ -143,10 +144,17 @@ func (b *Box) GetInnerRect() (int, int, int, int) {
 		width -= boolToInt(b.borderLeft) + boolToInt(b.borderRight)
 		height -= boolToInt(b.borderTop) + boolToInt(b.borderBottom)
 	}
-	return x + b.paddingLeft,
-		y + b.paddingTop,
-		width - b.paddingLeft - b.paddingRight,
-		height - b.paddingTop - b.paddingBottom
+	x, y, width, height = x+b.paddingLeft,
+		y+b.paddingTop,
+		width-b.paddingLeft-b.paddingRight,
+		height-b.paddingTop-b.paddingBottom
+	if width < 0 {
+		width = 0
+	}
+	if height < 0 {
+		height = 0
+	}
+	return x, y, width, height
 }
 
 func boolToInt(b bool) int {
@@ -459,6 +467,13 @@ func (b *Box) Draw(screen tcell.Screen) bool {
 	if b.innerY < 0 {
 		b.innerHeight += b.innerY
 		b.innerY = 0
+	}
+
+	if b.innerWidth < 0 {
+		b.innerWidth = 0
+	}
+	if b.innerHeight < 0 {
+		b.innerHeight = 0
 	}
 
 	return true
