@@ -24,6 +24,10 @@ const queueSize = 100
 type Application struct {
 	sync.RWMutex
 
+	// MouseEnabled decides whether newly created Screens support
+	// mouselisteners.
+	MouseEnabled bool
+
 	// The application's screen. Apart from Run(), this variable should never be
 	// set directly. Always use the screenReplacement channel after calling
 	// Fini(), to set a new screen (or nil to stop the application).
@@ -70,6 +74,7 @@ func NewApplication() *Application {
 		events:            make(chan tcell.Event, queueSize),
 		updates:           make(chan func(), queueSize),
 		screenReplacement: make(chan tcell.Screen, 1),
+		MouseEnabled:      true,
 	}
 }
 
@@ -108,7 +113,9 @@ func (a *Application) SetScreen(screen tcell.Screen) *Application {
 	if a.screen == nil {
 		// Run() has not been called yet.
 		a.screen = screen
-		a.screen.EnableMouse()
+		if a.MouseEnabled {
+			a.screen.EnableMouse()
+		}
 		a.Unlock()
 		return a
 	}
@@ -139,7 +146,9 @@ func (a *Application) Run() error {
 			a.Unlock()
 			return err
 		}
-		a.screen.EnableMouse()
+		if a.MouseEnabled {
+			a.screen.EnableMouse()
+		}
 	}
 
 	// We catch panics to clean up because they mess up the terminal.
@@ -367,11 +376,15 @@ func (a *Application) Suspend(f func()) bool {
 
 	// Make a new screen.
 	var err error
-	screen.EnableMouse()
+	screen, err = tcell.NewScreen()
 	if err != nil {
 		panic(err)
 	}
-	screen, err = tcell.NewScreen()
+
+	if a.MouseEnabled {
+		screen.EnableMouse()
+	}
+
 	a.screenReplacement <- screen
 	// One key event will get lost, see https://github.com/gdamore/tcell/issues/194
 
