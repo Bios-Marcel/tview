@@ -306,6 +306,7 @@ func getComponentAtRecursively(primitive Primitive, x, y int) *Primitive {
 				return found
 			}
 		}
+		return getSelfIfCoordinatesMatch(primitive, x, y)
 	}
 
 	grid, isGrid := primitive.(*Grid)
@@ -316,6 +317,7 @@ func getComponentAtRecursively(primitive Primitive, x, y int) *Primitive {
 				return found
 			}
 		}
+		return getSelfIfCoordinatesMatch(primitive, x, y)
 	}
 
 	pages, isPages := primitive.(*Pages)
@@ -329,8 +331,13 @@ func getComponentAtRecursively(primitive Primitive, x, y int) *Primitive {
 				break
 			}
 		}
+		return getSelfIfCoordinatesMatch(primitive, x, y)
 	}
 
+	return getSelfIfCoordinatesMatch(primitive, x, y)
+}
+
+func getSelfIfCoordinatesMatch(primitive Primitive, x, y int) *Primitive {
 	componentX, componentY, width, height := primitive.GetRect()
 	// Subtracting -1 from height and width, since we got a pixel with coordinate already.
 	if componentX <= x && componentY <= y && (componentX+width-1) >= x && (componentY+height-1) >= y {
