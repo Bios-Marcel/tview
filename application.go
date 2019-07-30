@@ -243,11 +243,6 @@ EventLoop:
 						a.draw()
 					}
 				}
-
-				// Ctrl-C closes the application.
-				if event.Key() == tcell.KeyCtrlC {
-					a.Stop()
-				}
 			case *tcell.EventResize:
 				a.RLock()
 				screen := a.screen
