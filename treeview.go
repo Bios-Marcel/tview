@@ -29,6 +29,9 @@ type TreeNode struct {
 	// The item's text.
 	text string
 
+	// This text is a prefix in front of the normal text.
+	prefix string
+
 	// The text color.
 	color tcell.Color
 
@@ -111,6 +114,11 @@ func (n *TreeNode) SetChildren(childNodes []*TreeNode) *TreeNode {
 // GetText returns this node's text.
 func (n *TreeNode) GetText() string {
 	return n.text
+}
+
+// GetText returns this node's prefix text.
+func (n *TreeNode) GetPrefix() string {
+	return n.prefix
 }
 
 // GetParent returns a refrence to this nodes parent node or nil if this is a
@@ -199,6 +207,12 @@ func (n *TreeNode) IsExpanded() bool {
 // SetText sets the node's text which is displayed.
 func (n *TreeNode) SetText(text string) *TreeNode {
 	n.text = text
+	return n
+}
+
+// SetPrefix sets the node's prefix text which is displayed.
+func (n *TreeNode) SetPrefix(prefix string) *TreeNode {
+	n.prefix = prefix
 	return n
 }
 
@@ -744,7 +758,7 @@ func (t *TreeView) Draw(screen tcell.Screen) bool {
 				if node == t.currentNode {
 					style = tcell.StyleDefault.Background(node.color).Foreground(t.backgroundColor)
 				}
-				printWithStyle(screen, node.text, x+node.textX+prefixWidth, posY, width-node.textX-prefixWidth, AlignLeft, style)
+				printWithStyle(screen, node.prefix+node.text, x+node.textX+prefixWidth, posY, width-node.textX-prefixWidth, AlignLeft, style)
 			}
 		}
 
