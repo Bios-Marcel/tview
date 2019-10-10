@@ -999,11 +999,12 @@ func (t *TextView) Draw(screen tcell.Screen) bool {
 		} else {
 			overflowIndicatorX = x + width - 2
 		}
+		style := tcell.StyleDefault.Foreground(Styles.InverseTextColor).Background(t.backgroundColor)
 		if t.lineOffset != 0 {
-			screen.SetContent(overflowIndicatorX, y-1, '▲', nil, tcell.StyleDefault)
+			screen.SetContent(overflowIndicatorX, y-1, '▲', nil, style)
 		}
 		if !t.trackEnd {
-			screen.SetContent(overflowIndicatorX, y+height, '▼', nil, tcell.StyleDefault)
+			screen.SetContent(overflowIndicatorX, y+height, '▼', nil, style)
 		}
 	}
 
