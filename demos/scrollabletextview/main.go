@@ -14,6 +14,8 @@ func main() {
 		}).
 		SetScrollable(true).
 		SetText(strings.Repeat("OwO\n", 100)).
+		SetIndicateOverflow(true)
+	textView.
 		SetBorderSides(true, true, true, false).
 		SetBorder(true)
 	if err := app.SetRoot(textView, true).Run(); err != nil {
