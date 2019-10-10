@@ -982,6 +982,22 @@ func (t *TextView) Draw(screen tcell.Screen) bool {
 		t.lineOffset = 0
 	}
 
+	if t.scrollable && t.border && t.borderTop && t.borderBottom{
+		//FIXME Border insets are being ignored right now.
+		var overflowIndicatorX int
+		if t.borderLeft {
+			overflowIndicatorX = width
+		} else {
+			overflowIndicatorX = width - 1
+		}
+		if t.lineOffset != 0 {
+			screen.SetContent(overflowIndicatorX, y-1, '▲', nil, tcell.StyleDefault)
+		}
+		if !t.trackEnd {
+			screen.SetContent(overflowIndicatorX, y+height, '▼', nil, tcell.StyleDefault)
+		}
+	}
+
 	return true
 }
 
