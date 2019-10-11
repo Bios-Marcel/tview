@@ -992,19 +992,13 @@ func (t *TextView) Draw(screen tcell.Screen) bool {
 	}
 
 	if t.scrollable && t.indicateOverflow && t.border && t.borderTop && t.borderBottom {
-		//FIXME Border insets are being ignored right now.
-		var overflowIndicatorX int
-		if t.borderLeft {
-			overflowIndicatorX = x + width - 1
-		} else {
-			overflowIndicatorX = x + width - 2
-		}
+		overflowIndicatorX := t.innerX + t.innerWidth + t.paddingRight - 1
 		style := tcell.StyleDefault.Foreground(Styles.InverseTextColor).Background(t.backgroundColor)
 		if t.lineOffset != 0 {
-			screen.SetContent(overflowIndicatorX, y-1, '▲', nil, style)
+			screen.SetContent(overflowIndicatorX, y-t.paddingTop-1, '▲', nil, style)
 		}
 		if !t.trackEnd {
-			screen.SetContent(overflowIndicatorX, y+height, '▼', nil, style)
+			screen.SetContent(overflowIndicatorX, y+t.paddingBottom+height, '▼', nil, style)
 		}
 	}
 
