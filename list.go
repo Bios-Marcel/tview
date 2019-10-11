@@ -533,9 +533,10 @@ func (l *List) Draw(screen tcell.Screen) bool {
 	}
 
 	if l.showSecondaryText {
-		l.drawOverflow(screen, l.offset != 0, len(l.items)-l.offset > (l.innerHeight/2))
+		heightDividedByTwo := l.innerHeight / 2
+		l.drawOverflow(screen, l.offset != 0, len(l.items)-l.offset > heightDividedByTwo && len(l.items) > heightDividedByTwo)
 	} else {
-		l.drawOverflow(screen, l.offset != 0, l.offset != len(l.items) - height)
+		l.drawOverflow(screen, l.offset != 0, l.offset != len(l.items)-l.innerHeight && len(l.items) > l.innerHeight)
 	}
 
 	return true

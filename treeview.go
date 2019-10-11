@@ -766,7 +766,7 @@ func (t *TreeView) Draw(screen tcell.Screen) bool {
 		posY++
 	}
 
-	t.drawOverflow(screen, t.offsetY != 0, t.offsetY != len(t.nodes) - height)
+	t.drawOverflow(screen, t.offsetY != 0, (t.offsetY != len(t.nodes) - t.innerHeight) && len(t.nodes) > t.innerHeight)
 
 	return true
 }
