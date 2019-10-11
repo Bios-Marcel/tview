@@ -139,10 +139,6 @@ type TextView struct {
 	// navigated when the text is longer than what fits into the box.
 	scrollable bool
 
-	// If set to true, the text view will show down and up arrows if there is
-	// content out of sight.
-	indicateOverflow bool
-
 	// If set to true, lines that are longer than the available width are wrapped
 	// onto the next line. If set to false, any characters beyond the available
 	// width are discarded.
@@ -200,11 +196,6 @@ func (t *TextView) SetScrollable(scrollable bool) *TextView {
 	if !scrollable {
 		t.trackEnd = true
 	}
-	return t
-}
-
-func (t *TextView) SetIndicateOverflow(indicateOverflow bool) *TextView {
-	t.indicateOverflow = indicateOverflow
 	return t
 }
 
@@ -991,15 +982,8 @@ func (t *TextView) Draw(screen tcell.Screen) bool {
 		t.lineOffset = 0
 	}
 
-	if t.scrollable && t.indicateOverflow && t.border && t.borderTop && t.borderBottom {
-		overflowIndicatorX := t.innerX + t.innerWidth + t.paddingRight - 1
-		style := tcell.StyleDefault.Foreground(Styles.InverseTextColor).Background(t.backgroundColor)
-		if t.lineOffset != 0 {
-			screen.SetContent(overflowIndicatorX, y-t.paddingTop-1, '▲', nil, style)
-		}
-		if !t.trackEnd {
-			screen.SetContent(overflowIndicatorX, y+t.paddingBottom+height, '▼', nil, style)
-		}
+	if t.scrollable {
+		t.drawOverflow(screen, t.lineOffset != 0, !t.trackEnd)
 	}
 
 	return true

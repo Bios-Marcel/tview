@@ -41,6 +41,11 @@ type Box struct {
 	// The style attributes of the border.
 	borderAttributes tcell.AttrMask
 
+	// If set to true, the text view will show down and up arrows if there is
+	// content out of sight. While box doesn't implement scrolling, this is
+	// an abstraction for other components
+	indicateOverflow bool
+
 	// The title. Only visible if there is a border, too.
 	title string
 
@@ -503,4 +508,24 @@ func (b *Box) HasFocus() bool {
 // GetFocusable returns the item's Focusable.
 func (b *Box) GetFocusable() Focusable {
 	return b.focus
+}
+
+// SetIndicateOverflow toggles whether overflow arrows can be drawn in order to
+// signal that the component contains content that is out of the viewarea.
+func (b *Box) SetIndicateOverflow(indicateOverflow bool) *Box {
+	b.indicateOverflow = indicateOverflow
+	return b
+}
+
+func (b *Box) drawOverflow(screen tcell.Screen, showTop, showBottom bool) {
+	if b.indicateOverflow && b.border && b.borderTop && b.borderBottom {
+		overflowIndicatorX := b.innerX + b.innerWidth + b.paddingRight - 1
+		style := tcell.StyleDefault.Foreground(Styles.InverseTextColor).Background(b.backgroundColor)
+		if showTop {
+			screen.SetContent(overflowIndicatorX, b.innerY-b.paddingTop-1, '▲', nil, style)
+		}
+		if showBottom {
+			screen.SetContent(overflowIndicatorX, b.innerY+b.innerHeight+b.paddingBottom, '▼', nil, style)
+		}
+	}
 }
