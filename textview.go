@@ -828,7 +828,7 @@ func (t *TextView) Draw(screen tcell.Screen) bool {
 	t.scrollToHighlights = false
 
 	// Adjust line offset.
-	if t.lineOffset+height > len(t.index) {
+	if t.lineOffset+height >= len(t.index) {
 		t.trackEnd = true
 	}
 	if t.trackEnd {
