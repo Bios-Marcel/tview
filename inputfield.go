@@ -330,6 +330,18 @@ func (i *InputField) Draw(screen tcell.Screen) bool {
 	return true
 }
 
+// Insert adds the given argument as additional text at the current cursor
+// position. Rejecting the insertion isn't possible.
+func (i *InputField) Insert(text string) {
+	if text != "" {
+		i.text = i.text[:i.cursorPos] + text + i.text[i.cursorPos:]
+		i.cursorPos += len(text)
+		if i.changed != nil {
+			i.changed(i.text)
+		}
+	}
+}
+
 // InputHandler returns the handler for this primitive.
 func (i *InputField) InputHandler() func(event *tcell.EventKey, setFocus func(p Primitive)) {
 	return i.WrapInputHandler(func(event *tcell.EventKey, setFocus func(p Primitive)) {
