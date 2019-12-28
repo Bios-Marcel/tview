@@ -28,6 +28,9 @@ type Box struct {
 	// The box's background color.
 	backgroundColor tcell.Color
 
+	// Reverse video.
+	reverse bool
+
 	// Whether or not a border is drawn, reducing the box's space for content by
 	// two in width and height.
 	border bool
@@ -40,6 +43,9 @@ type Box struct {
 
 	// The style attributes of the border.
 	borderAttributes tcell.AttrMask
+
+	// The style attributes of the border when the box has focus.
+	borderFocusAttributes tcell.AttrMask
 
 	// If set to true, the text view will show down and up arrows if there is
 	// content out of sight. While box doesn't implement scrolling, this is
@@ -90,6 +96,7 @@ func NewBox() *Box {
 		backgroundColor:  Styles.PrimitiveBackgroundColor,
 		borderColor:      Styles.BorderColor,
 		borderFocusColor: Styles.BorderFocusColor,
+		borderFocusAttributes: tcell.AttrNone,
 		titleColor:       Styles.TitleColor,
 		titleAlign:       AlignCenter,
 		borderTop:        true,
@@ -97,6 +104,10 @@ func NewBox() *Box {
 		borderLeft:       true,
 		borderRight:      true,
 		visible:          true,
+	}
+
+	if vtxxx {
+		b.borderFocusAttributes = tcell.AttrBold
 	}
 
 	b.focus = b
@@ -264,6 +275,12 @@ func (b *Box) SetBackgroundColor(color tcell.Color) *Box {
 	return b
 }
 
+// SetReverse turns on or off the reverse video attribute.
+func (b *Box) SetReverse(on bool) *Box {
+	b.reverse = on
+	return b
+}
+
 // SetBorder sets the flag indicating whether or not the box should have a
 // border.
 func (b *Box) SetBorder(show bool) *Box {
@@ -277,7 +294,7 @@ func (b *Box) SetBorderColor(color tcell.Color) *Box {
 	return b
 }
 
-// SetBorderFocusColor sets the box's border color.
+// SetBorderFocusColor sets the box's border color when focused.
 func (b *Box) SetBorderFocusColor(color tcell.Color) *Box {
 	b.borderFocusColor = color
 	return b
@@ -311,6 +328,15 @@ func (b *Box) SetBorderAttributes(attr tcell.AttrMask) *Box {
 	return b
 }
 
+// SetBorderFocusAttributes sets the border's style attributes when focused. You can combine
+// different attributes using bitmask operations:
+//
+//   box.SetBorderFocusAttributes(tcell.AttrUnderline | tcell.AttrBold)
+func (b *Box) SetBorderFocusAttributes(attr tcell.AttrMask) *Box {
+	b.borderFocusAttributes = attr
+	return b
+}
+
 // SetTitle sets the box's title.
 func (b *Box) SetTitle(title string) *Box {
 	b.title = title
@@ -340,7 +366,7 @@ func (b *Box) Draw(screen tcell.Screen) bool {
 	def := tcell.StyleDefault
 
 	// Fill background.
-	background := def.Background(b.backgroundColor)
+	background := def.Background(b.backgroundColor).Reverse(b.reverse)
 	if b.backgroundColor != tcell.ColorDefault {
 		for y := b.y; y < b.y+b.height; y++ {
 			for x := b.x; x < b.x+b.width; x++ {
@@ -353,7 +379,11 @@ func (b *Box) Draw(screen tcell.Screen) bool {
 	if b.border && b.width >= 2 && b.height >= 2 {
 		var border tcell.Style
 		if b.hasFocus {
-			border = background.Foreground(b.borderFocusColor) | tcell.Style(b.borderAttributes)
+			if b.borderFocusAttributes != 0 {
+				border = background.Foreground(b.borderFocusColor) | tcell.Style(b.borderFocusAttributes)
+			} else {
+				border = background.Foreground(b.borderFocusColor) | tcell.Style(b.borderAttributes)
+			}
 		} else {
 			border = background.Foreground(b.borderColor) | tcell.Style(b.borderAttributes)
 		}

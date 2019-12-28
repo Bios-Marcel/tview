@@ -1,6 +1,8 @@
 package tview
 
 import (
+	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -34,6 +36,9 @@ type TreeNode struct {
 
 	// The text color.
 	color tcell.Color
+
+	// The text attributes.
+	attr tcell.AttrMask
 
 	// Whether or not this node can be selected.
 	selectable bool
@@ -116,7 +121,7 @@ func (n *TreeNode) GetText() string {
 	return n.text
 }
 
-// GetText returns this node's prefix text.
+// GetPrefix returns this node's prefix text.
 func (n *TreeNode) GetPrefix() string {
 	return n.prefix
 }
@@ -224,6 +229,17 @@ func (n *TreeNode) GetColor() tcell.Color {
 // SetColor sets the node's text color.
 func (n *TreeNode) SetColor(color tcell.Color) *TreeNode {
 	n.color = color
+	return n
+}
+
+// GetAttributes gets the node's attributes.
+func (n *TreeNode) GetAttributes() tcell.AttrMask {
+	return n.attr
+}
+
+// SetAttributes sets the node's attributes.
+func (n *TreeNode) SetAttributes(attr tcell.AttrMask) *TreeNode {
+	n.attr = attr
 	return n
 }
 
@@ -753,10 +769,18 @@ func (t *TreeView) Draw(screen tcell.Screen) bool {
 			}
 
 			// Text.
+			VTxxx, err := regexp.MatchString("(vt)[0-9]+", os.Getenv("TERM"))
+			if err != nil {
+				panic(err)
+			}
 			if node.textX+prefixWidth < width {
-				style := tcell.StyleDefault.Foreground(node.color)
+				style := tcell.StyleDefault.Foreground(node.color) | tcell.Style(node.attr)
 				if node == t.currentNode {
-					style = tcell.StyleDefault.Background(node.color).Foreground(t.backgroundColor)
+					if VTxxx {
+						style = tcell.StyleDefault.Reverse(true)
+					} else {
+						style = tcell.StyleDefault.Background(node.color).Foreground(t.backgroundColor) | tcell.Style(node.attr)
+					}
 				}
 				printWithStyle(screen, node.prefix+node.text, x+node.textX+prefixWidth, posY, width-node.textX-prefixWidth, AlignLeft, style)
 			}
@@ -766,7 +790,7 @@ func (t *TreeView) Draw(screen tcell.Screen) bool {
 		posY++
 	}
 
-	t.drawOverflow(screen, t.offsetY != 0, (t.offsetY != len(t.nodes) - t.innerHeight) && len(t.nodes) > t.innerHeight)
+	t.drawOverflow(screen, t.offsetY != 0, (t.offsetY != len(t.nodes)-t.innerHeight) && len(t.nodes) > t.innerHeight)
 
 	return true
 }
