@@ -144,7 +144,9 @@ func (f *Flex) Draw(screen tcell.Screen) bool {
 		distSize = height
 	}
 	for _, item := range f.items {
-		if !item.Item.IsVisible() {
+		//Nil can be used for spacing.
+		//See: https://github.com/rivo/tview/wiki/Modal
+		if item.Item != nil && !item.Item.IsVisible() {
 			continue
 		}
 
@@ -161,7 +163,9 @@ func (f *Flex) Draw(screen tcell.Screen) bool {
 		pos = y
 	}
 	for _, item := range f.items {
-		if !item.Item.IsVisible() {
+		//Nil can be used for spacing.
+		//See: https://github.com/rivo/tview/wiki/Modal
+		if item.Item != nil && !item.Item.IsVisible() {
 			if item.Item.GetFocusable().HasFocus() {
 				item.Item.Blur()
 				screen.HideCursor()
