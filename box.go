@@ -376,7 +376,7 @@ func (b *Box) Draw(screen tcell.Screen) bool {
 	}
 
 	// Draw border.
-	if b.border && b.width >= 2 && b.height >= 2 {
+	if b.border && b.width >= 2 && b.height >= 1 {
 		var border tcell.Style
 		if b.hasFocus {
 			if b.borderFocusAttributes != 0 {
@@ -396,6 +396,7 @@ func (b *Box) Draw(screen tcell.Screen) bool {
 		bottomLeft = Borders.BottomLeft
 		bottomRight = Borders.BottomRight
 
+		//Special case in order to render only the title-line of something properly.
 		if b.borderTop {
 			for x := b.x + 1; x < b.x+b.width-1; x++ {
 				screen.SetContent(x, b.y, horizontal, nil, border)
@@ -414,56 +415,59 @@ func (b *Box) Draw(screen tcell.Screen) bool {
 			}
 		}
 
-		if b.borderBottom {
-			for x := b.x + 1; x < b.x+b.width-1; x++ {
-				screen.SetContent(x, b.y+b.height-1, horizontal, nil, border)
+		//Special case in order to render only the title-line of something properly.
+		if b.height > 1 {
+			if b.borderBottom {
+				for x := b.x + 1; x < b.x+b.width-1; x++ {
+					screen.SetContent(x, b.y+b.height-1, horizontal, nil, border)
+				}
+
+				if b.borderLeft {
+					screen.SetContent(b.x, b.y+b.height-1, bottomLeft, nil, border)
+				} else {
+					screen.SetContent(b.x, b.y+b.height-1, horizontal, nil, border)
+				}
+				if b.borderRight {
+					screen.SetContent(b.x+b.width-1, b.y+b.height-1, bottomRight, nil, border)
+				} else {
+					screen.SetContent(b.x+b.width-1, b.y+b.height-1, horizontal, nil, border)
+				}
 			}
 
 			if b.borderLeft {
-				screen.SetContent(b.x, b.y+b.height-1, bottomLeft, nil, border)
-			} else {
-				screen.SetContent(b.x, b.y+b.height-1, horizontal, nil, border)
+				for y := b.y + 1; y < b.y+b.height-1; y++ {
+					screen.SetContent(b.x, y, vertical, nil, border)
+				}
+
+				if b.borderTop {
+					screen.SetContent(b.x, b.y, topLeft, nil, border)
+				} else {
+					screen.SetContent(b.x, b.y, vertical, nil, border)
+				}
+
+				if b.borderBottom {
+					screen.SetContent(b.x, b.y+b.height-1, bottomLeft, nil, border)
+				} else {
+					screen.SetContent(b.x, b.y+b.height-1, vertical, nil, border)
+				}
 			}
+
 			if b.borderRight {
-				screen.SetContent(b.x+b.width-1, b.y+b.height-1, bottomRight, nil, border)
-			} else {
-				screen.SetContent(b.x+b.width-1, b.y+b.height-1, horizontal, nil, border)
-			}
-		}
+				for y := b.y + 1; y < b.y+b.height-1; y++ {
+					screen.SetContent(b.x+b.width-1, y, vertical, nil, border)
+				}
 
-		if b.borderLeft {
-			for y := b.y + 1; y < b.y+b.height-1; y++ {
-				screen.SetContent(b.x, y, vertical, nil, border)
-			}
+				if b.borderTop {
+					screen.SetContent(b.x+b.width-1, b.y, topRight, nil, border)
+				} else {
+					screen.SetContent(b.x+b.width-1, b.y, vertical, nil, border)
+				}
 
-			if b.borderTop {
-				screen.SetContent(b.x, b.y, topLeft, nil, border)
-			} else {
-				screen.SetContent(b.x, b.y, vertical, nil, border)
-			}
-
-			if b.borderBottom {
-				screen.SetContent(b.x, b.y+b.height-1, bottomLeft, nil, border)
-			} else {
-				screen.SetContent(b.x, b.y+b.height-1, vertical, nil, border)
-			}
-		}
-
-		if b.borderRight {
-			for y := b.y + 1; y < b.y+b.height-1; y++ {
-				screen.SetContent(b.x+b.width-1, y, vertical, nil, border)
-			}
-
-			if b.borderTop {
-				screen.SetContent(b.x+b.width-1, b.y, topRight, nil, border)
-			} else {
-				screen.SetContent(b.x+b.width-1, b.y, vertical, nil, border)
-			}
-
-			if b.borderBottom {
-				screen.SetContent(b.x+b.width-1, b.y+b.height-1, bottomRight, nil, border)
-			} else {
-				screen.SetContent(b.x+b.width-1, b.y+b.height-1, vertical, nil, border)
+				if b.borderBottom {
+					screen.SetContent(b.x+b.width-1, b.y+b.height-1, bottomRight, nil, border)
+				} else {
+					screen.SetContent(b.x+b.width-1, b.y+b.height-1, vertical, nil, border)
+				}
 			}
 		}
 
